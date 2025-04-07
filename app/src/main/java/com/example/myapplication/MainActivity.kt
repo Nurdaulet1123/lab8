@@ -6,9 +6,11 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 class MainActivity : AppCompatActivity() {
 
     private lateinit var randomCharacterEditText: EditText
@@ -22,12 +24,18 @@ class MainActivity : AppCompatActivity() {
         randomCharacterEditText = findViewById(R.id.editText_randomCharacter)
         serviceIntent = Intent(this, RandomCharacterService::class.java)
 
+        // Инициализация BroadcastReceiver для обработки broadcast сообщений
         broadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 val character = intent?.getCharExtra("randomCharacter", '?')
                 randomCharacterEditText.setText(character.toString())
             }
         }
+
+        // Регистрация кнопок
+        findViewById<Button>(R.id.button_start).setOnClickListener { onClick(it) }
+        findViewById<Button>(R.id.button_end).setOnClickListener { onClick(it) }
+        findViewById<Button>(R.id.button_next).setOnClickListener { onClick(it) }
     }
 
     fun onClick(view: View) {
@@ -43,11 +51,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        registerReceiver(broadcastReceiver, IntentFilter("my.custom.action.tag.lab6"))
+        // Регистрируем broadcastReceiver через LocalBroadcastManager
+        val filter = IntentFilter("my.custom.action.tag.lab6")
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, filter)
     }
 
     override fun onStop() {
         super.onStop()
-        unregisterReceiver(broadcastReceiver)
+        // Отменяем регистрацию broadcastReceiver
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
     }
 }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import java.util.*
 
 class RandomCharacterService : Service() {
@@ -29,7 +30,10 @@ class RandomCharacterService : Service() {
 
                     val broadcastIntent = Intent("my.custom.action.tag.lab6")
                     broadcastIntent.putExtra("randomCharacter", myRandomCharacter)
-                    sendBroadcast(broadcastIntent)
+
+                    // Используем LocalBroadcastManager для отправки сообщения
+                    LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(broadcastIntent)
+
                 } catch (e: InterruptedException) {
                     Log.e(TAG, "Thread interrupted")
                 }
