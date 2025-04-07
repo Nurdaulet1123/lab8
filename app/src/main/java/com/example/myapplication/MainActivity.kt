@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -10,6 +11,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 class MainActivity : AppCompatActivity() {
 
@@ -40,14 +43,20 @@ class MainActivity : AppCompatActivity() {
 
     fun onClick(view: View) {
         when (view.id) {
-            R.id.button_start -> startService(serviceIntent)
+            R.id.button_start -> {
+                // Правильный способ запуска ForegroundService
+                ContextCompat.startForegroundService(this, serviceIntent)
+            }
             R.id.button_end -> {
                 stopService(serviceIntent)
                 randomCharacterEditText.setText("")
             }
-            R.id.button_next -> startActivity(Intent(this, MusicActivity::class.java))
+            R.id.button_next -> {
+                startActivity(Intent(this, MusicActivity::class.java))
+            }
         }
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -61,4 +70,5 @@ class MainActivity : AppCompatActivity() {
         // Отменяем регистрацию broadcastReceiver
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
     }
+
 }
